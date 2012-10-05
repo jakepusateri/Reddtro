@@ -1,0 +1,172 @@
+﻿<common:LayoutAwarePage
+    x:Name="pageRoot"
+    x:Class="ReddtroBeta.ItemsPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    IsTabStop="false"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ReddtroBeta"
+    xmlns:data="using:ReddtroBeta.Data"
+    xmlns:common="using:ReddtroBeta.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cfo="using:CharmFlyoutLibrary"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <!-- Collection of items displayed by this page -->
+        <CollectionViewSource
+            x:Name="itemsViewSource"
+            Source="{Binding Items}"
+            d:Source="{Binding AllGroups, Source={d:DesignInstance Type=data:SampleDataSource, IsDesignTimeCreatable=True}}"/>
+    </Page.Resources>
+<Page.BottomAppBar>
+        <AppBar x:Name="bottomAppBar">
+            <Grid>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource RefreshAppBarButtonStyle}" Click="Refresh_Button_Click"/>                    
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Path Data="M4.477612,43.283581 L574.62646,38.80555 C574.62646,38.80555 547.76068,122.38819 468.65622,122.38819 C389.55176,122.38819 1.4921499,116.41806 1.4921499,116.41806 z" Fill="#FF1D4590" HorizontalAlignment="Left" Height="84.582" Margin="-19.903,38.306,0,0" Stretch="Fill" Stroke="Black" UseLayoutRounding="False" VerticalAlignment="Top" Width="595.03" Grid.ColumnSpan="2"/>
+            <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
+            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" Style="{StaticResource PageHeaderTextStyle}" Margin="0,0,30,44"/>
+        </Grid>
+
+        <!-- Horizontal scrolling grid used in most view states -->
+        <GridView
+            x:Name="itemGridView"
+            AutomationProperties.AutomationId="ItemsGridView"
+            AutomationProperties.Name="Items"
+            TabIndex="1"
+            Grid.Row="1"
+            Margin="0,-4,0,0"
+            Padding="116,0,116,46"
+            ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
+            ItemTemplate="{StaticResource Reddit250x250ItemTemplate}"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            ItemClick="ItemView_ItemClick" 
+            />
+        <StackPanel x:Name="mainpageLoadingPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1" Visibility="Collapsed">
+            <ProgressRing x:Name="mainpageLoadingRing" IsActive="False" Height="100" Width="100"/>
+            <TextBlock Text="Loading Subreddits..." Style="{StaticResource BasicTextStyle}" FontSize="30" VerticalAlignment="Center"/>
+        </StackPanel>
+        
+      
+        <!-- Vertical scrolling list only used when snapped -->
+        <ListView
+            x:Name="itemListView"
+            AutomationProperties.AutomationId="ItemsListView"
+            AutomationProperties.Name="Items"
+            TabIndex="1"
+            Grid.Row="1"
+            Visibility="Collapsed"
+            Margin="0,-10,0,0"
+            Padding="10,0,0,60"
+            ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
+            ItemTemplate="{StaticResource Standard80ItemTemplate}"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            ItemClick="ItemView_ItemClick"/>
+
+        <ScrollViewer x:Name="SRManager" Grid.Column="1" Grid.RowSpan="2">
+            <StackPanel Margin="0,20,20,20"  >
+                <TextBlock  Text="Subscribed Subreddits" Style="{StaticResource TitleTextStyle}" />
+                <Line/>
+                <ListView x:Name="srmanagerlist" Margin="10" SelectionChanged="SRMDelete" ItemsSource="{Binding Source={StaticResource itemsViewSource}}" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="True"/>
+                                <TextBlock  Text="{Binding Title}" Style="{StaticResource ItemTextStyle}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBox x:Name="SRMAddTextBox"  Margin="0,0,15,0" Text="Add a subreddit..." GotFocus="SRMAddGotFocus" KeyUp="SRMEntryCheck" />
+
+                <Button x:Name="Add" Content="Add" Tapped="Add_Tapped_1" Margin="0,0,0,20"/>
+                <TextBlock x:Name="SRMStatusText" Text=""/>
+
+                
+
+                <!--<StackPanel Orientation="Horizontal">
+                    <Button x:Name="SRMSaveButton" Content="Save" Click="SRMSave"  BorderBrush="Black" Foreground="Black" />
+                    <Button x:Name="SRMEditButton" Content="Edit" Click="SRMEdit"  BorderBrush="Black" Foreground="Black" />
+                </StackPanel>-->
+
+            </StackPanel>
+        </ScrollViewer>
+        <VisualStateManager.VisualStateGroups>
+
+            <!-- Visual states reflect the application's view state -->
+            <VisualStateGroup x:Name="ApplicationViewStates">
+                <VisualState x:Name="FullScreenLandscape"/>
+                <VisualState x:Name="Filled"/>
+
+                <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+                <VisualState x:Name="FullScreenPortrait">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemGridView" Storyboard.TargetProperty="Padding">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,0,86,56"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <!--
+                    The back button and title have different styles when snapped, and the list representation is substituted
+                    for the grid displayed in all other view states
+                -->
+                <VisualState x:Name="Snapped">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemGridView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SRManager" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</common:LayoutAwarePage>

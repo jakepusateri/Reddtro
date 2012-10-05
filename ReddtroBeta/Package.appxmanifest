@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="23751JakePusateri.Reddtro" Publisher="CN=C3470738-07AF-4C7C-838F-D433388E607A" Version="1.0.0.1" />
+  <Properties>
+    <DisplayName>Reddtro</DisplayName>
+    <PublisherDisplayName>Jake Pusateri</PublisherDisplayName>
+    <Logo>Assets\50x501.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.0</OSMinVersion>
+    <OSMaxVersionTested>6.2.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="ReddtroBeta.App">
+      <VisualElements DisplayName="Reddtro" Logo="Assets\150x150.png" SmallLogo="Assets\30x30.png" Description="Reddtro is a Reddit client for Windows 8 Metro" ForegroundText="light" BackgroundColor="#1D4590" ToastCapable="false">
+        <DefaultTile ShowName="noLogos" ShortName="Reddtro" WideLogo="Assets\310x150.png" />
+        <SplashScreen Image="Assets\620x300.png" BackgroundColor="#1D4590" />
+        <InitialRotationPreference>
+          <Rotation Preference="portrait" />
+          <Rotation Preference="landscape" />
+          <Rotation Preference="portraitFlipped" />
+          <Rotation Preference="landscapeFlipped" />
+        </InitialRotationPreference>
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="picturesLibrary" />
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

@@ -1,0 +1,70 @@
+﻿<UserControl
+    x:Class="ReddtroBeta.SettingsFlyout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ReddtroBeta"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cfo="using:CharmFlyoutLibrary"
+    
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="646">
+    
+    <Grid >
+        <cfo:CharmFlyout
+            x:Name="cfoAbout"
+            Heading="About"
+            HeadingBackgroundBrush="#FF1D4590"
+            ContentBackgroundBrush="{StaticResource ApplicationPageBackgroundThemeBrush}"
+            >
+            <StackPanel  >
+                <TextBlock 
+                    FontSize="16" Style="{StaticResource PageSubheaderTextStyle}">Reddtro is designed by Jake Pusateri</TextBlock>
+                <TextBlock  Margin="0,10,0,0"
+                    FontSize="16" Style="{StaticResource HeaderTextStyle}">For support:</TextBlock>
+                <HyperlinkButton 
+                    Click="OnMailTo">/r/reddtro</HyperlinkButton>
+            </StackPanel>
+        </cfo:CharmFlyout>
+        
+        <cfo:CharmFlyout
+            x:Name="cfoSettings"
+            Heading="Settings"
+            HeadingBackgroundBrush="#FF1D4590"
+            ContentBackgroundBrush="{StaticResource ApplicationPageBackgroundThemeBrush}"
+            >
+            <ScrollViewer>
+            <StackPanel Margin="0,0,15,0"  >
+                <TextBlock  Text="Subscribed Subreddits" Style="{StaticResource TitleTextStyle}" />
+                <Line/>
+                <ListView x:Name="srmanagerlist" Margin="10" SelectionChanged="SRMDelete"  >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="True"/>
+                                <TextBlock  Text="{Binding Title}" Style="{StaticResource ItemTextStyle}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>                    
+                <TextBox x:Name="SRMAddTextBox"  Margin="0,0,15,0" Text="Add a subreddit..." GotFocus="SRMAddGotFocus" KeyUp="SRMEntryCheck" />
+                
+                <Button x:Name="Add" Content="Add" Tapped="Add_Tapped_1" Margin="0,0,0,20"/>
+                <TextBlock x:Name="SRMStatusText" Text=""/>
+                
+                <TextBlock  Text="Theme Settings" Style="{StaticResource TitleTextStyle}" Margin="0,30,0,30"/>
+                
+                <Button x:Name="ThemeSelector" Content="Switch Theme" Tapped="changeTheme" VerticalAlignment="Bottom"/>
+                    
+                <!--<StackPanel Orientation="Horizontal">
+                    <Button x:Name="SRMSaveButton" Content="Save" Click="SRMSave"  BorderBrush="Black" Foreground="Black" />
+                    <Button x:Name="SRMEditButton" Content="Edit" Click="SRMEdit"  BorderBrush="Black" Foreground="Black" />
+                </StackPanel>-->
+                
+            </StackPanel>
+            </ScrollViewer>
+        </cfo:CharmFlyout>
+        
+    </Grid>
+</UserControl>
